@@ -1,0 +1,38 @@
+version: '3.9'
+
+networks:
+  kong-net:
+    external: true
+
+services:
+  hack:
+    build: ./backends/hack
+    ports:
+      - "8081:8081"
+
+  kong:
+    image: kong/kong-gateway:latest
+    restart: always
+    environment:
+      KONG_ROLE: "data_plane"
+      KONG_DATABASE: "off"
+      KONG_VITALS: "off"
+      KONG_CLUSTER_MTLS: "pki"
+      KONG_CLUSTER_CONTROL_PLANE: "${KONG_CLUSTER_PREFIX}.eu.cp0.konghq.com:443"
+      KONG_CLUSTER_SERVER_NAME: "${KONG_CLUSTER_PREFIX}.eu.cp0.konghq.com"
+      KONG_CLUSTER_TELEMETRY_ENDPOINT: "${KONG_CLUSTER_PREFIX}.eu.tp0.konghq.com:443"
+      KONG_CLUSTER_TELEMETRY_SERVER_NAME: "${KONG_CLUSTER_PREFIX}.eu.tp0.konghq.com"
+      KONG_CLUSTER_CERT: "/etc/kong/certs/tls.crt"
+      KONG_CLUSTER_CERT_KEY: "/etc/kong/certs/tls.key"
+      KONG_LUA_SSL_TRUSTED_CERTIFICATE: "system"
+      KONG_KONNECT_MODE: "on"
+      KONG_CLUSTER_DP_LABELS: "type:docker-macOsArmOS"
+      KONG_ROUTER_FLAVOR: "expressions"
+      KONG_LOG_LEVEL: "debug"
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    networks:
+      - kong-net
+    volumes:
+      - ./certs:/etc/kong/certs:ro      

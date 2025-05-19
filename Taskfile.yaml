@@ -1,0 +1,39 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  build:
+    desc: Build all Go services
+    cmds:
+      - task: build:hack
+
+  build:hack:
+    dir: backends/hack
+    cmds:
+      - go build -o ../../bin/hack .
+
+  run:hack:
+    deps: [build:hack]
+    cmds:
+      - |
+        docker run --rm --network kong-net \
+          -v $PWD/bin:/app \
+          -w /app \
+          -p 8081:8081 \
+          alpine sh -c "./hack"
+
+  run:local:
+    desc: Run both Go services locally on kong-net (for debugging)
+    deps: [build]
+    cmds:
+    - |
+      docker network inspect kong-net >/dev/null 2>&1 || docker network create kong-net
+    - |
+      docker run --rm -d --network kong-net --name hack \
+        -v $PWD/bin:/app -w /app -p 8081:8081 \
+        alpine sh -c "./hack"      
+
+  compose:
+    cmds:
+      - docker compose up -d
