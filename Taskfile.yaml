@@ -6,15 +6,15 @@ tasks:
   build:
     desc: Build all Go services
     cmds:
-      - task: build:hack
+      - task: build:users
 
   build:hack:
-    dir: backends/hack
+    dir: backends/users
     cmds:
-      - go build -o ../../bin/hack .
+      - go build -o ../../bin/users .
 
   run:hack:
-    deps: [build:hack]
+    deps: [build:users]
     cmds:
       - |
         docker run --rm --network kong-net \

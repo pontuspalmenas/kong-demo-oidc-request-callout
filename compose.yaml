@@ -5,13 +5,21 @@ networks:
     external: true
 
 services:
-  hack:
-    build: ./backends/hack
+  users:
+    container_name: "users"
+    build: backends/users
     ports:
       - "8081:8081"
+  auth:
+    container_name: "auth"
+    build: backends/auth
+    ports:
+      - "8082:8082"
+
 
   kong:
     image: kong/kong-gateway:latest
+    container_name: "kong"
     restart: always
     environment:
       KONG_ROLE: "data_plane"

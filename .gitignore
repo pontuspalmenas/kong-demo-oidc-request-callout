@@ -3,6 +3,7 @@
 .idea/*
 
 certs/*
+bin/*
 
 **/*.tfvars
 **/*.tfbackend
