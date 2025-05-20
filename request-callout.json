@@ -1,0 +1,122 @@
+{
+  "config": {
+    "cache": {
+      "cache_ttl": 300,
+      "memory": {
+        "dictionary_name": "kong_db_cache"
+      },
+      "redis": {
+        "cluster_addresses": null,
+        "cluster_max_redirections": 5,
+        "cluster_nodes": null,
+        "connect_timeout": 2000,
+        "connection_is_proxied": false,
+        "database": 0,
+        "host": "127.0.0.1",
+        "keepalive_backlog": null,
+        "keepalive_pool_size": 256,
+        "password": null,
+        "port": 6379,
+        "read_timeout": 2000,
+        "send_timeout": 2000,
+        "sentinel_addresses": null,
+        "sentinel_master": null,
+        "sentinel_nodes": null,
+        "sentinel_password": null,
+        "sentinel_role": null,
+        "sentinel_username": null,
+        "server_name": null,
+        "ssl": false,
+        "ssl_verify": false,
+        "timeout": 2000,
+        "username": null
+      },
+      "strategy": "off"
+    },
+    "callouts": [
+      {
+        "cache": {
+          "bypass": true
+        },
+        "depends_on": [],
+        "name": "auth",
+        "request": {
+          "body": {
+            "custom": {},
+            "decode": false,
+            "forward": false
+          },
+          "by_lua": null,
+          "error": {
+            "error_response_code": 401,
+            "error_response_msg": "Unauthorized",
+            "http_statuses": [
+              401,
+              403
+            ],
+            "on_error": "fail",
+            "retries": 2
+          },
+          "headers": {
+            "custom": {},
+            "forward": true
+          },
+          "http_opts": {
+            "proxy": null,
+            "ssl_server_name": null,
+            "ssl_verify": false,
+            "timeouts": null
+          },
+          "method": "GET",
+          "query": {
+            "custom": {
+              "customerSystemId": "abc123"
+            },
+            "forward": false
+          },
+          "url": "http://host.docker.internal:8082"
+        },
+        "response": {
+          "body": {
+            "decode": true,
+            "store": true
+          },
+          "by_lua": null,
+          "headers": {
+            "store": true
+          }
+        }
+      }
+    ],
+    "upstream": {
+      "body": {
+        "custom": null,
+        "decode": true,
+        "forward": true
+      },
+      "by_lua": null,
+      "headers": {
+        "custom": {
+          "authorization": "Bearer $(callouts.auth.response.body.authorizationToken)"
+        },
+        "forward": true
+      },
+      "query": {
+        "custom": null,
+        "forward": true
+      }
+    }
+  },
+  "enabled": true,
+  "id": "5dab3e24-f8fd-4de4-9fcb-0df2c5f3f786",
+  "name": "request-callout",
+  "protocols": [
+    "grpc",
+    "grpcs",
+    "http",
+    "https"
+  ],
+  "route": {
+    "id": "26dabedc-7ad8-405b-8c18-8c475f1b22a4"
+  }
+}
