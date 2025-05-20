@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"strings"
 	"time"
 )
@@ -39,12 +40,21 @@ func contains(s []string, e string) bool {
 }
 
 func dump(r *http.Request) {
-	debug(fmt.Sprintf("%s %s %s\n", r.Method, r.URL, r.Proto))
-	fmt.Printf("Headers:\n")
-	for k, v := range r.Header {
-		fmt.Printf("%v: %v\n", k, v)
+	fmt.Println("--------------------------------------------------------------------------------")
+	dr, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		log.Printf("Dump error: %v", err)
+	} else {
+		fmt.Println(string(dr))
 	}
-
+	fmt.Println("--------------------------------------------------------------------------------")
+	/*
+		debug(fmt.Sprintf("%s %s (%v) %s\n", r.Method, r.URL, r.URL.Query(), r.Proto))
+		fmt.Printf("Headers:\n")
+		for k, v := range r.Header {
+			fmt.Printf("%v: %v\n", k, v)
+		}
+	*/
 }
 
 // DEBUG ONLY - we are _not_ verifying the signature!
